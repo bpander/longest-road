@@ -2,7 +2,7 @@ import React from 'react';
 
 import { standardMap } from 'assets/maps';
 import { parseHexGrid } from 'lib/hexGrid';
-import { max, min } from 'lodash';
+import { head, last, max, meanBy, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
 const result = parseHexGrid(standardMap, 50);
@@ -57,12 +57,15 @@ class App extends React.Component<{}, AppState> {
         viewBox={`0 0 ${width} ${height}`}
       >
         {result.faces.map((face, i) => {
-          const vertices = face.map(vertexIndex => result.vertices[vertexIndex]);
+          const vertices = face.map(vi => result.vertices[vi].map((n, j) => center[j] + n));
+          const x = meanBy(vertices, head);
+          const y = meanBy(vertices, last);
+
           return (
-            <polygon
-              key={i}
-              points={vertices.map(vertex => vertex.map((v, j) => center[j] + v).join(',')).join(' ')}
-            />
+            <React.Fragment key={i}>
+              <polygon points={vertices.map(vertex => vertex.join(',')).join(' ')} />
+              <text fill="white" x={x} y={y}>{i + 1}</text>
+            </React.Fragment>
           );
         })}
         {result.edges.map((edge, i) => (

@@ -5,3 +5,7 @@ body {
 }
 
 .d-block { display: block; }
+
+text {
+  text-anchor: middle;
+}

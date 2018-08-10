@@ -56,14 +56,15 @@ const makeMesh2dFromPaths = (paths: Path[]): Mesh2d => {
 export const parseHexGrid = (tiles: Vector2[], r: number): Mesh2d => {
   const hexWidth = Math.sqrt(3) * r;
   const hexHeight = 2 * r;
-  const paths: Path[] = tiles.map(([ col, row ], i) => {
+  const paths: Path[] = tiles.map(([ col, row ]) => {
     const tilePosition: Vector2 = [
       col * hexWidth + (row % 2 * 0.5 * hexWidth),
       row * 0.75 * hexHeight,
     ];
-    const path: Path = times(6, j => {
-      const theta = ONE_SIXTH_TAU * j;
+    const path: Path = times(6, i => {
+      const theta = ONE_SIXTH_TAU * i;
       const vertex: Vector2 = [
+        // rounding fixes floating point issues
         round(tilePosition[0] + r * Math.sin(theta), 5),
         round(tilePosition[1] + r * Math.cos(theta), 5),
       ];
