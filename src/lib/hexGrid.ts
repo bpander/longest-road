@@ -1,4 +1,4 @@
-import { isEqual, round, times, uniqWith } from 'lodash';
+import { isEqual, round, times } from 'lodash';
 
 import Vector2 from 'types/Vector2';
 
@@ -12,7 +12,7 @@ const ONE_SIXTH_TAU = Math.PI * 2 / 6;
 export const parseHexGrid = (tiles: Vector2[], r: number): HexMapParseResult => {
   const hexWidth = Math.sqrt(3) * r;
   const hexHeight = 2 * r;
-  let vertices: Vector2[] = [];
+  const vertices: Vector2[] = [];
   const edges: Vector2[] = [];
   tiles.forEach(([ col, row ]) => {
     const tilePosition: Vector2 = [
@@ -27,7 +27,16 @@ export const parseHexGrid = (tiles: Vector2[], r: number): HexMapParseResult => 
     });
   });
 
-  vertices = uniqWith(vertices, isEqual);
+  const openSet = [ ...vertices ];
+  while (openSet.length) {
+    const vertex = openSet.shift();
+    for (let i = openSet.length; i >= 0; i--) {
+      if (isEqual(vertex, openSet[i])) {
+        vertices.splice(vertices.indexOf(openSet[i]), 1);
+        openSet.splice(i, 1);
+      }
+    }
+  }
 
   return { vertices, edges };
 };
