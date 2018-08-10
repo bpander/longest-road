@@ -6,5 +6,11 @@
       "node_modules/**/*.ts",
       "coverage/lcov-report/*.js"
     ]
+  },
+  "rules": {
+    "interface-name": [ true, "never-prefix" ],
+    "member-access": [ true, "no-public" ],
+    "no-console": { "severity": "warning" },
+    "object-literal-sort-keys": false
   }
 }
