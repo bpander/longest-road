@@ -56,6 +56,15 @@ class App extends React.Component<{}, AppState> {
         height={height}
         viewBox={`0 0 ${width} ${height}`}
       >
+        {result.faces.map((face, i) => {
+          const vertices = face.map(vertexIndex => result.vertices[vertexIndex]);
+          return (
+            <polygon
+              key={i}
+              points={vertices.map(vertex => vertex.map((v, j) => center[j] + v).join(',')).join(' ')}
+            />
+          );
+        })}
         {result.edges.map((edge, i) => (
           <line
             key={i}
@@ -64,7 +73,7 @@ class App extends React.Component<{}, AppState> {
             x2={center[0] + result.vertices[edge[1]][0]}
             y2={center[1] + result.vertices[edge[1]][1]}
             strokeWidth={1}
-            stroke="#aaaaaa"
+            stroke="green"
           />
         ))}
         {result.vertices.map((vertex, i) => (
