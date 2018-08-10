@@ -1,19 +1,28 @@
-import * as React from 'react';
-import './App.css';
+import React from 'react';
 
-import logo from './logo.svg';
+import { standardMap } from 'assets/maps';
+import { parseHexGrid } from 'lib/hexGrid';
+
+const result = parseHexGrid(standardMap, 30);
+console.log(result);
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
+      <div style={{ position: 'relative' }}>
+        {result.vertices.map((vertex, i) => (
+          <div
+            key={i}
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: '50%',
+              position: 'absolute',
+              background: 'black',
+              transform: `translate(${100 + vertex[0]}px, ${100 + vertex[1]}px)`,
+            }}
+          />
+        ))}
       </div>
     );
   }
