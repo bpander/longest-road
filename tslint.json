@@ -11,6 +11,7 @@
     "interface-name": [ true, "never-prefix" ],
     "member-access": [ true, "no-public" ],
     "no-console": { "severity": "warning" },
+    "no-debugger": { "severity": "warning" },
     "object-literal-sort-keys": false
   }
 }

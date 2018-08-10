@@ -5,7 +5,7 @@ import { parseHexGrid } from 'lib/hexGrid';
 import { max, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
-const result = parseHexGrid(standardMap, 30);
+const result = parseHexGrid(standardMap, 50);
 console.log(result);
 
 interface AppState {
