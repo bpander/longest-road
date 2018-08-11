@@ -1,15 +1,25 @@
+import classNames from 'classnames';
 import React from 'react';
 
 import { standardMap } from 'assets/maps';
+import { removeFirst } from 'lib/arrays';
 import { parseHexGrid } from 'lib/hexGrid';
-import { head, last, max, meanBy, min } from 'lodash';
+import { head, includes, last, max, meanBy, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
 const result = parseHexGrid(standardMap, 50);
 console.log(result);
 
+enum EditMode {
+  None,
+  Add,
+  Subtract,
+}
+
 interface AppState {
   viewportSize: Vector2;
+  edges: number[];
+  editMode: EditMode;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -22,6 +32,8 @@ class App extends React.Component<{}, AppState> {
     super(props);
     this.state = {
       viewportSize: App.getViewportSize(),
+      edges: [],
+      editMode: EditMode.None,
     };
   }
 
@@ -31,6 +43,39 @@ class App extends React.Component<{}, AppState> {
 
   onResize = () => {
     this.setState({ viewportSize: App.getViewportSize() });
+  };
+
+  onEdgeMouseDown: React.MouseEventHandler = e => {
+    e.preventDefault();
+    const edgeIndex = Number(e.currentTarget.getAttribute('data-edge-index'));
+    const wasSelected = includes(this.state.edges, edgeIndex);
+    const editMode = (wasSelected) ? EditMode.Subtract : EditMode.Add;
+    const edges = (wasSelected)
+      ? removeFirst(this.state.edges, edgeIndex)
+      : [ ...this.state.edges, edgeIndex ];
+
+    this.setState({ edges, editMode });
+    window.addEventListener('mouseup', this.onMouseUp);
+  };
+
+  onEdgeMouseEnter: React.MouseEventHandler = e => {
+    const edgeIndex = Number(e.currentTarget.getAttribute('data-edge-index'));
+    switch (this.state.editMode) {
+      case EditMode.Add:
+        if (!includes(this.state.edges, edgeIndex)) {
+          this.setState({ edges: [ ...this.state.edges, edgeIndex ] });
+        }
+        break;
+
+      case EditMode.Subtract:
+        this.setState({ edges: removeFirst(this.state.edges, edgeIndex) });
+        break;
+    }
+  };
+
+  onMouseUp = () => {
+    window.removeEventListener('mouseup', this.onMouseUp);
+    this.setState({ editMode: EditMode.None });
   };
 
   render() {
@@ -77,7 +122,12 @@ class App extends React.Component<{}, AppState> {
               y1={result.vertices[edge[0]][1]}
               x2={result.vertices[edge[1]][0]}
               y2={result.vertices[edge[1]][1]}
-              className="edge"
+              className={classNames('edge', {
+                'edge--active': includes(this.state.edges, i),
+              })}
+              data-edge-index={i}
+              onMouseDown={this.onEdgeMouseDown}
+              onMouseEnter={this.onEdgeMouseEnter}
             />
           ))}
           {result.vertices.map((vertex, i) => (
@@ -85,7 +135,7 @@ class App extends React.Component<{}, AppState> {
               key={i}
               cx={vertex[0]}
               cy={vertex[1]}
-              r={3}
+              r={5}
               className="node"
             />
           ))}

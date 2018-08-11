@@ -12,7 +12,7 @@ text {
 }
 
 .node {
-  fill: #d3feff;
+  fill: #7eadc3;
 }
 
 .face {
@@ -20,5 +20,19 @@ text {
 }
 
 .edge {
-  stroke: #3dbffc;
+  stroke: #1b3e64;
+  stroke-width: 9;
+  cursor: pointer;
+}
+
+.edge:hover {
+  stroke: #2c719f;
+}
+
+.edge--active {
+  stroke: #d8e5eb;
+}
+
+.edge--active:hover {
+  stroke: #becfd7;
 }
