@@ -1,6 +1,6 @@
-import Vector2 from 'types/Vector2';
+import { Tile } from 'types/HexGrid';
 
-export const standardMap: Vector2[] = [
+export const standardMap: Tile[] = [
   [ 1, 0 ], [ 2, 0 ],
   [ 3, 0 ], [ 3, 1 ],
   [ 4, 2 ], [ 3, 3 ],

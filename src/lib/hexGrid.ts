@@ -1,21 +1,14 @@
 import { flatten, isEqual, round, times, uniqWith } from 'lodash';
 
-import Vector2 from 'types/Vector2';
-
-type Path = Vector2[];
-type Face = number[];
-
-interface Mesh2d {
-  vertices: Vector2[];
-  edges: Vector2[];
-  faces: Face[];
-}
+import LayoutType from 'enums/LayoutType';
+import { Tile } from 'types/HexGrid';
+import * as Mesh2d from 'types/Mesh2d';
 
 const ONE_SIXTH_TAU = Math.PI * 2 / 6;
 
 const reverse = <T>(arr: T[]): T[] => [ ...arr ].reverse();
 
-const dedupeVertices = (vertices: Vector2[]): Vector2[] => {
+const dedupeVertices = (vertices: Mesh2d.Vertex[]): Mesh2d.Vertex[] => {
   const deduped = [ ...vertices ];
   const openSet = [ ...vertices ];
   while (openSet.length) {
@@ -31,17 +24,17 @@ const dedupeVertices = (vertices: Vector2[]): Vector2[] => {
   return deduped;
 };
 
-const makeMesh2dFromPaths = (paths: Path[]): Mesh2d => {
+const makeMeshFromPaths = (paths: Mesh2d.Path[]): Mesh2d.Mesh => {
   const vertices = dedupeVertices(flatten(paths));
-  const faces: Face[] = paths.map(path => {
-    const face: Face = path.map(vertex => {
+  const faces: Mesh2d.Face[] = paths.map(path => {
+    const face: Mesh2d.Face = path.map(vertex => {
       const vertexIndex = vertices.findIndex(v => isEqual(v, vertex));
       return vertexIndex;
     });
     return face;
   });
 
-  const allEdges: Vector2[] = [];
+  const allEdges: Mesh2d.Edge[] = [];
   faces.forEach(face => {
     times(face.length, i => {
       allEdges.push([ face[i], face[(i + 1) % face.length] ]);
@@ -53,25 +46,29 @@ const makeMesh2dFromPaths = (paths: Path[]): Mesh2d => {
   return { vertices, edges, faces };
 };
 
-export const parseHexGrid = (tiles: Vector2[], r: number): Mesh2d => {
-  const hexWidth = Math.sqrt(3) * r;
-  const hexHeight = 2 * r;
-  const paths: Path[] = tiles.map(([ col, row ]) => {
-    const tilePosition: Vector2 = [
+export const makeMeshFromHexTiles = (
+  tiles: Tile[],
+  radius: number,
+  layoutType: LayoutType.OddR = LayoutType.OddR, // probably the only layout type that needs supported
+): Mesh2d.Mesh => {
+  const hexWidth = Math.sqrt(3) * radius;
+  const hexHeight = 2 * radius;
+  const paths: Mesh2d.Path[] = tiles.map(([ col, row ]) => {
+    const tilePosition: Tile = [
       col * hexWidth + (row % 2 * 0.5 * hexWidth),
       row * 0.75 * hexHeight,
     ];
-    const path: Path = times(6, i => {
+    const path: Mesh2d.Path = times(6, i => {
       const theta = ONE_SIXTH_TAU * i;
-      const vertex: Vector2 = [
+      const vertex: Mesh2d.Vertex = [
         // rounding fixes floating point issues
-        round(tilePosition[0] + r * Math.sin(theta), 5),
-        round(tilePosition[1] + r * Math.cos(theta), 5),
+        round(tilePosition[0] + radius * Math.sin(theta), 5),
+        round(tilePosition[1] + radius * Math.cos(theta), 5),
       ];
       return vertex;
     });
     return path;
   });
 
-  return makeMesh2dFromPaths(paths);
+  return makeMeshFromPaths(paths);
 };

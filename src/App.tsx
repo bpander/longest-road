@@ -3,12 +3,12 @@ import React from 'react';
 
 import { standardMap } from 'assets/maps';
 import { removeFirst } from 'lib/arrays';
-import { parseHexGrid } from 'lib/hexGrid';
+import { makeMeshFromHexTiles } from 'lib/hexGrid';
 import { head, includes, last, max, meanBy, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
-const result = parseHexGrid(standardMap, 50);
-console.log(result);
+const mesh = makeMeshFromHexTiles(standardMap, 50);
+console.log(mesh);
 
 enum EditMode {
   None,
@@ -85,8 +85,8 @@ class App extends React.Component<{}, AppState> {
   render() {
     const [ width, height ] = this.state.viewportSize;
 
-    const xCoords = result.vertices.map(v => v[0]);
-    const yCoords = result.vertices.map(v => v[1]);
+    const xCoords = mesh.vertices.map(v => v[0]);
+    const yCoords = mesh.vertices.map(v => v[1]);
 
     const xBounds: Vector2 = [ min(xCoords)!, max(xCoords)! ];
     const yBounds: Vector2 = [ min(yCoords)!, max(yCoords)! ];
@@ -114,8 +114,8 @@ class App extends React.Component<{}, AppState> {
           viewBox={`0 0 ${width} ${height}`}
         >
           <g style={{ transform: `translate(${center.map(v => v + 'px').join()})` }}>
-            {result.faces.map((face, i) => {
-              const vertices = face.map(vi => result.vertices[vi]);
+            {mesh.faces.map((face, i) => {
+              const vertices = face.map(vi => mesh.vertices[vi]);
               const x = meanBy(vertices, head);
               const y = meanBy(vertices, last);
 
@@ -129,13 +129,13 @@ class App extends React.Component<{}, AppState> {
                 </React.Fragment>
               );
             })}
-            {result.edges.map((edge, i) => (
+            {mesh.edges.map((edge, i) => (
               <line
                 key={i}
-                x1={result.vertices[edge[0]][0]}
-                y1={result.vertices[edge[0]][1]}
-                x2={result.vertices[edge[1]][0]}
-                y2={result.vertices[edge[1]][1]}
+                x1={mesh.vertices[edge[0]][0]}
+                y1={mesh.vertices[edge[0]][1]}
+                x2={mesh.vertices[edge[1]][0]}
+                y2={mesh.vertices[edge[1]][1]}
                 className={classNames('edge', {
                   'edge--active': includes(this.state.edges, i),
                 })}
@@ -144,7 +144,7 @@ class App extends React.Component<{}, AppState> {
                 onMouseEnter={this.onEdgeMouseEnter}
               />
             ))}
-            {result.vertices.map((vertex, i) => (
+            {mesh.vertices.map((vertex, i) => (
               <circle
                 key={i}
                 cx={vertex[0]}
