@@ -5,7 +5,9 @@ body {
   background: #000c28;
 }
 
-.d-block { display: block; }
+.scene {
+  display: block;
+}
 
 text {
   text-anchor: middle;
@@ -25,7 +27,7 @@ text {
   cursor: pointer;
 }
 
-.edge:hover {
+.scene:not(.scene--drawing) .edge:hover {
   stroke: #2c719f;
 }
 
@@ -33,6 +35,6 @@ text {
   stroke: #d8e5eb;
 }
 
-.edge--active:hover {
+.scene:not(.scene--drawing) .edge--active:hover {
   stroke: #becfd7;
 }

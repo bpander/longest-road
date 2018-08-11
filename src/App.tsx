@@ -94,7 +94,7 @@ class App extends React.Component<{}, AppState> {
 
     return (
       <svg
-        className="d-block"
+        className={classNames('scene', { 'scene--drawing': this.state.editMode !== EditMode.None })}
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
