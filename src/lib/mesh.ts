@@ -58,31 +58,47 @@ const pathToEdges = (path: Mesh2d.Path): Mesh2d.Edge[] => {
   return edges;
 };
 
-export const getLongestPath = (
-  edges: Mesh2d.Edge[],
-  impassableNodes: number[],
-): Mesh2d.Path => {
+export const getLongestPath = (edges: Mesh2d.Edge[], impassableNodes: number[]): Mesh2d.Path => {
   let openSet = [ ...edges ];
   const paths: Mesh2d.Path[] = [];
-  const vertexIndexes = uniq(flatten(edges))
-  vertexIndexes.forEach(vi => {
+  const search = (validEdges: Mesh2d.Edge[], startEdge: Mesh2d.Edge, startIndex: number) => {
+    const path = followEdge(validEdges, startEdge, startIndex);
+    openSet = differenceWith(openSet, pathToEdges(path), edgeComparator);
+    paths.push(path);
+  };
+
+  // First split the edge network at its confluences (if any)
+  uniq(flatten(edges)).forEach(vi => {
     const edgesAtVertex = getEdgesAtVertex(edges, vi, NUM_EDGES_FOR_CONFLUENCE);
     if (edgesAtVertex.length < NUM_EDGES_FOR_CONFLUENCE) {
       return;
     }
 
     edgesAtVertex.forEach(edge => {
-      const edgeIndex = openSet.indexOf(edge);
-      if (edgeIndex < 0) {
-        return;
+      if (includes(openSet, edge)) {
+        search(edges, edge, edge.indexOf(vi));
       }
-      const path = followEdge(edges, edge, edge.indexOf(vi));
-      openSet = differenceWith(openSet, pathToEdges(path), edgeComparator);
-      paths.push(path);
     });
   });
 
-  console.log({ paths, openSet });
+  // Then look for non-looping paths
+  uniq(flatten(openSet)).forEach(vi => {
+    const edgesAtVertex = getEdgesAtVertex(edges, vi, 2);
+    if (edgesAtVertex.length === 1) {
+      const terminalEdge = edgesAtVertex[0];
+      if (includes(openSet, terminalEdge)) {
+        search(openSet, terminalEdge, terminalEdge.indexOf(vi));
+      }
+    }
+  });
+
+  // Lastly take care of island loops
+  while (openSet.length) {
+    const edge = openSet[0];
+    search(openSet, edge, 0);
+  }
+
+  console.log({ paths });
 
   return [];
 };
