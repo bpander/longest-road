@@ -1,49 +1,16 @@
-import { flatten, isEqual, round, times, uniqWith } from 'lodash';
+import { round, times } from 'lodash';
 
-import LayoutType from 'enums/LayoutType';
-import { reverse } from 'lib/arrays';
-import { Tile } from 'types/HexGrid';
-import * as Mesh2d from 'types/Mesh2d';
+import * as Mesh2d from 'lib/Mesh2d';
+import Vector2 from 'types/Vector2';
+
+enum LayoutType {
+  OddR,
+}
+
+// A hex's grid coordinates
+export type Tile = Vector2;
 
 const ONE_SIXTH_TAU = Math.PI * 2 / 6;
-
-const dedupeVertices = (vertices: Mesh2d.Vertex[]): Mesh2d.Vertex[] => {
-  const deduped = [ ...vertices ];
-  const openSet = [ ...vertices ];
-  while (openSet.length) {
-    const vertex = openSet.shift();
-    for (let i = openSet.length; i >= 0; i--) {
-      if (isEqual(vertex, openSet[i])) {
-        deduped.splice(deduped.indexOf(openSet[i]), 1);
-        openSet.splice(i, 1);
-      }
-    }
-  }
-
-  return deduped;
-};
-
-const makeMeshFromPolygons = (polygons: Mesh2d.Polygon[]): Mesh2d.Mesh => {
-  const vertices = dedupeVertices(flatten(polygons));
-  const faces: Mesh2d.Face[] = polygons.map(polygon => {
-    const face: Mesh2d.Face = polygon.map(vertex => {
-      const point = vertices.findIndex(v => isEqual(v, vertex));
-      return point;
-    });
-    return face;
-  });
-
-  const allEdges: Mesh2d.Edge[] = [];
-  faces.forEach(face => {
-    times(face.length, i => {
-      allEdges.push([ face[i], face[(i + 1) % face.length] ]);
-    });
-  });
-
-  const edges = uniqWith(allEdges, (a, b) => isEqual(a, b) || isEqual(a, reverse(b)));
-
-  return { vertices, edges, faces };
-};
 
 export const makeMeshFromHexTiles = (
   tiles: Tile[],
@@ -69,5 +36,5 @@ export const makeMeshFromHexTiles = (
     return polygon;
   });
 
-  return makeMeshFromPolygons(polygons);
+  return Mesh2d.makeMeshFromPolygons(polygons);
 };

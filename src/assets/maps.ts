@@ -1,4 +1,4 @@
-import { Tile } from 'types/HexGrid';
+import { Tile } from 'lib/HexGrid';
 
 export const standardMap: Tile[] = [
   [ 1, 0 ], [ 2, 0 ],

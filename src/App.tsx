@@ -1,11 +1,11 @@
 import classNames from 'classnames';
+import { head, includes, last, max, meanBy, min } from 'lodash';
 import React from 'react';
 
 import { standardMap } from 'assets/maps';
 import { removeFirst } from 'lib/arrays';
-import { makeMeshFromHexTiles } from 'lib/hexGrid';
-import { getPaths } from 'lib/mesh';
-import { head, includes, last, max, meanBy, min } from 'lodash';
+import { makeMeshFromHexTiles } from 'lib/HexGrid';
+import { getPaths } from 'lib/Mesh2d';
 import Vector2 from 'types/Vector2';
 
 const mesh = makeMeshFromHexTiles(standardMap, 50);
