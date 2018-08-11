@@ -27,8 +27,8 @@ const makeMeshFromPolygons = (polygons: Mesh2d.Polygon[]): Mesh2d.Mesh => {
   const vertices = dedupeVertices(flatten(polygons));
   const faces: Mesh2d.Face[] = polygons.map(polygon => {
     const face: Mesh2d.Face = polygon.map(vertex => {
-      const vertexIndex = vertices.findIndex(v => isEqual(v, vertex));
-      return vertexIndex;
+      const point = vertices.findIndex(v => isEqual(v, vertex));
+      return point;
     });
     return face;
   });

@@ -6,11 +6,14 @@ export type Vertex = Vector2;
 // A list of vertices, implies a closed shape
 export type Polygon = Vertex[];
 
-// Like a Polygon but is made of up references to vertices (vertex indexes)
-export type Face = number[];
+// A way to reference a specific vertex; its index in a vertices array
+export type Point = number;
 
-// Two vertex indexes, signifies a connection between two vertices
-export type Edge = Vector2;
+// Like a Polygon but is made of up Points
+export type Face = Point[];
+
+// Signifies a connection between two Points
+export type Edge = [ Point, Point ];
 
 export interface Mesh {
   vertices: Vertex[];
@@ -18,4 +21,4 @@ export interface Mesh {
   faces: Face[];
 }
 
-export type Path = number[];
+export type Path = Point[];

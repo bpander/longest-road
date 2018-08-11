@@ -123,7 +123,7 @@ class App extends React.Component<{}, AppState> {
         >
           <g style={{ transform: `translate(${center.map(v => v + 'px').join()})` }}>
             {mesh.faces.map((face, i) => {
-              const vertices = face.map(vi => mesh.vertices[vi]);
+              const vertices = face.map(p => mesh.vertices[p]);
               const x = meanBy(vertices, head);
               const y = meanBy(vertices, last);
 
@@ -133,7 +133,7 @@ class App extends React.Component<{}, AppState> {
                     points={vertices.map(vertex => vertex.join(',')).join(' ')}
                     className="face"
                   />
-                  <text fill="white" x={x} y={y}>{i + 1}</text>
+                  <text fill="rgba(255, 255, 255, 0.7)" x={x} y={y}>{i}</text>
                 </React.Fragment>
               );
             })}
