@@ -4,7 +4,7 @@ import React from 'react';
 import { standardMap } from 'assets/maps';
 import { removeFirst } from 'lib/arrays';
 import { makeMeshFromHexTiles } from 'lib/hexGrid';
-import { getLongestPath } from 'lib/mesh';
+import { getPaths } from 'lib/mesh';
 import { head, includes, last, max, meanBy, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
@@ -45,7 +45,7 @@ class App extends React.Component<{}, AppState> {
   componentDidUpdate(prevProps: {}, prevState: AppState) {
     if (prevState.edges !== this.state.edges) {
       const edges = this.state.edges.map(index => mesh.edges[index]);
-      console.log(getLongestPath(edges, []));
+      console.log(getPaths(edges, []));
     }
   }
 

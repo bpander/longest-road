@@ -1,7 +1,7 @@
 import { flatten, isEqual, round, times, uniqWith } from 'lodash';
 
 import LayoutType from 'enums/LayoutType';
-import { edgeComparator } from 'lib/mesh';
+import { reverse } from 'lib/arrays';
 import { Tile } from 'types/HexGrid';
 import * as Mesh2d from 'types/Mesh2d';
 
@@ -40,7 +40,7 @@ const makeMeshFromPolygons = (polygons: Mesh2d.Polygon[]): Mesh2d.Mesh => {
     });
   });
 
-  const edges = uniqWith(allEdges, edgeComparator);
+  const edges = uniqWith(allEdges, (a, b) => isEqual(a, b) || isEqual(a, reverse(b)));
 
   return { vertices, edges, faces };
 };
