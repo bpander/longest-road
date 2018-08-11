@@ -5,6 +5,11 @@ body {
   background: #000c28;
 }
 
+.toolbar {
+  position: fixed;
+  width: 100%;
+}
+
 .scene {
   display: block;
 }

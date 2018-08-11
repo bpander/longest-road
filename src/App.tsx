@@ -78,6 +78,10 @@ class App extends React.Component<{}, AppState> {
     this.setState({ editMode: EditMode.None });
   };
 
+  onClearClick = () => {
+    this.setState({ edges: [] });
+  };
+
   render() {
     const [ width, height ] = this.state.viewportSize;
 
@@ -93,54 +97,59 @@ class App extends React.Component<{}, AppState> {
     ];
 
     return (
-      <svg
-        className={classNames('scene', { 'scene--drawing': this.state.editMode !== EditMode.None })}
-        width={width}
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-      >
-        <g style={{ transform: `translate(${center.map(v => v + 'px').join()})` }}>
-          {result.faces.map((face, i) => {
-            const vertices = face.map(vi => result.vertices[vi]);
-            const x = meanBy(vertices, head);
-            const y = meanBy(vertices, last);
+      <React.Fragment>
+        <div className="toolbar">
+          <button onClick={this.onClearClick}>clear</button>
+        </div>
+        <svg
+          className={classNames('scene', { 'scene--drawing': this.state.editMode !== EditMode.None })}
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+        >
+          <g style={{ transform: `translate(${center.map(v => v + 'px').join()})` }}>
+            {result.faces.map((face, i) => {
+              const vertices = face.map(vi => result.vertices[vi]);
+              const x = meanBy(vertices, head);
+              const y = meanBy(vertices, last);
 
-            return (
-              <React.Fragment key={i}>
-                <polygon
-                  points={vertices.map(vertex => vertex.join(',')).join(' ')}
-                  className="face"
-                />
-                <text fill="white" x={x} y={y}>{i + 1}</text>
-              </React.Fragment>
-            );
-          })}
-          {result.edges.map((edge, i) => (
-            <line
-              key={i}
-              x1={result.vertices[edge[0]][0]}
-              y1={result.vertices[edge[0]][1]}
-              x2={result.vertices[edge[1]][0]}
-              y2={result.vertices[edge[1]][1]}
-              className={classNames('edge', {
-                'edge--active': includes(this.state.edges, i),
-              })}
-              data-edge-index={i}
-              onMouseDown={this.onEdgeMouseDown}
-              onMouseEnter={this.onEdgeMouseEnter}
-            />
-          ))}
-          {result.vertices.map((vertex, i) => (
-            <circle
-              key={i}
-              cx={vertex[0]}
-              cy={vertex[1]}
-              r={5}
-              className="node"
-            />
-          ))}
-        </g>
-      </svg>
+              return (
+                <React.Fragment key={i}>
+                  <polygon
+                    points={vertices.map(vertex => vertex.join(',')).join(' ')}
+                    className="face"
+                  />
+                  <text fill="white" x={x} y={y}>{i + 1}</text>
+                </React.Fragment>
+              );
+            })}
+            {result.edges.map((edge, i) => (
+              <line
+                key={i}
+                x1={result.vertices[edge[0]][0]}
+                y1={result.vertices[edge[0]][1]}
+                x2={result.vertices[edge[1]][0]}
+                y2={result.vertices[edge[1]][1]}
+                className={classNames('edge', {
+                  'edge--active': includes(this.state.edges, i),
+                })}
+                data-edge-index={i}
+                onMouseDown={this.onEdgeMouseDown}
+                onMouseEnter={this.onEdgeMouseEnter}
+              />
+            ))}
+            {result.vertices.map((vertex, i) => (
+              <circle
+                key={i}
+                cx={vertex[0]}
+                cy={vertex[1]}
+                r={5}
+                className="node"
+              />
+            ))}
+          </g>
+        </svg>
+      </React.Fragment>
     );
   }
 }
