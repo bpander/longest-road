@@ -24,10 +24,10 @@ const dedupeVertices = (vertices: Mesh2d.Vertex[]): Mesh2d.Vertex[] => {
   return deduped;
 };
 
-const makeMeshFromPaths = (paths: Mesh2d.Path[]): Mesh2d.Mesh => {
-  const vertices = dedupeVertices(flatten(paths));
-  const faces: Mesh2d.Face[] = paths.map(path => {
-    const face: Mesh2d.Face = path.map(vertex => {
+const makeMeshFromPolygons = (polygons: Mesh2d.Polygon[]): Mesh2d.Mesh => {
+  const vertices = dedupeVertices(flatten(polygons));
+  const faces: Mesh2d.Face[] = polygons.map(polygon => {
+    const face: Mesh2d.Face = polygon.map(vertex => {
       const vertexIndex = vertices.findIndex(v => isEqual(v, vertex));
       return vertexIndex;
     });
@@ -53,12 +53,12 @@ export const makeMeshFromHexTiles = (
 ): Mesh2d.Mesh => {
   const hexWidth = Math.sqrt(3) * radius;
   const hexHeight = 2 * radius;
-  const paths: Mesh2d.Path[] = tiles.map(([ col, row ]) => {
+  const polygons: Mesh2d.Polygon[] = tiles.map(([ col, row ]) => {
     const tilePosition: Tile = [
       col * hexWidth + (row % 2 * 0.5 * hexWidth),
       row * 0.75 * hexHeight,
     ];
-    const path: Mesh2d.Path = times(6, i => {
+    const polygon: Mesh2d.Polygon = times(6, i => {
       const theta = ONE_SIXTH_TAU * i;
       const vertex: Mesh2d.Vertex = [
         // rounding fixes floating point issues
@@ -67,8 +67,8 @@ export const makeMeshFromHexTiles = (
       ];
       return vertex;
     });
-    return path;
+    return polygon;
   });
 
-  return makeMeshFromPaths(paths);
+  return makeMeshFromPolygons(polygons);
 };
