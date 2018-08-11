@@ -99,7 +99,13 @@ class App extends React.Component<{}, AppState> {
     return (
       <React.Fragment>
         <div className="toolbar">
-          <button onClick={this.onClearClick}>clear</button>
+          <button
+            onClick={this.onClearClick}
+            className="btn"
+            disabled={!this.state.edges.length}
+          >
+            clear
+          </button>
         </div>
         <svg
           className={classNames('scene', { 'scene--drawing': this.state.editMode !== EditMode.None })}
