@@ -1,12 +1,11 @@
 import { flatten, isEqual, round, times, uniqWith } from 'lodash';
 
 import LayoutType from 'enums/LayoutType';
+import { edgeComparator } from 'lib/mesh';
 import { Tile } from 'types/HexGrid';
 import * as Mesh2d from 'types/Mesh2d';
 
 const ONE_SIXTH_TAU = Math.PI * 2 / 6;
-
-const reverse = <T>(arr: T[]): T[] => [ ...arr ].reverse();
 
 const dedupeVertices = (vertices: Mesh2d.Vertex[]): Mesh2d.Vertex[] => {
   const deduped = [ ...vertices ];
@@ -41,7 +40,7 @@ const makeMeshFromPolygons = (polygons: Mesh2d.Polygon[]): Mesh2d.Mesh => {
     });
   });
 
-  const edges = uniqWith(allEdges, (a, b) => isEqual(a, b) || isEqual(a, reverse(b)));
+  const edges = uniqWith(allEdges, edgeComparator);
 
   return { vertices, edges, faces };
 };

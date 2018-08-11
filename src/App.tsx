@@ -4,6 +4,7 @@ import React from 'react';
 import { standardMap } from 'assets/maps';
 import { removeFirst } from 'lib/arrays';
 import { makeMeshFromHexTiles } from 'lib/hexGrid';
+import { getLongestPath } from 'lib/mesh';
 import { head, includes, last, max, meanBy, min } from 'lodash';
 import Vector2 from 'types/Vector2';
 
@@ -39,6 +40,13 @@ class App extends React.Component<{}, AppState> {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize);
+  }
+
+  componentDidUpdate(prevProps: {}, prevState: AppState) {
+    if (prevState.edges !== this.state.edges) {
+      const edges = this.state.edges.map(index => mesh.edges[index]);
+      console.log(getLongestPath(edges, []));
+    }
   }
 
   onResize = () => {
@@ -145,13 +153,15 @@ class App extends React.Component<{}, AppState> {
               />
             ))}
             {mesh.vertices.map((vertex, i) => (
-              <circle
-                key={i}
-                cx={vertex[0]}
-                cy={vertex[1]}
-                r={5}
-                className="node"
-              />
+              <React.Fragment key={i}>
+                <circle
+                  cx={vertex[0]}
+                  cy={vertex[1]}
+                  r={5}
+                  className="node"
+                />
+                <text fill="white" x={vertex[0]} y={vertex[1]}>{i}</text>
+              </React.Fragment>
             ))}
           </g>
         </svg>

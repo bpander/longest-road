@@ -17,3 +17,5 @@ export interface Mesh {
   edges: Edge[];
   faces: Face[];
 }
+
+export type Path = number[];
