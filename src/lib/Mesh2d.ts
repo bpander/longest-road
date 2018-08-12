@@ -1,8 +1,9 @@
-import { reverse } from 'lib/arrays';
-import { flatten, includes, isEqual, times, uniqWith } from 'lodash';
+import { flatten, isEqual, times, uniqWith } from 'lodash';
+
+import { reverse } from 'lib/Arrays';
 import Vector2 from 'types/Vector2';
 
-// A point in 2d space (x, y)
+// An (x,y) coordinate where two lines meet
 export type Vertex = Vector2;
 
 // A list of vertices, implies a closed shape
@@ -22,8 +23,6 @@ export interface Mesh {
   edges: Edge[];
   faces: Face[];
 }
-
-export type Path = Point[];
 
 const dedupeVertices = (vertices: Vertex[]): Vertex[] => {
   const deduped = [ ...vertices ];
@@ -58,51 +57,7 @@ export const makeMeshFromPolygons = (polygons: Polygon[]): Mesh => {
     });
   });
 
-  const edges = uniqWith(allEdges, (a, b) => isEqual(a, b) || isEqual(a, reverse(b)));
+  const edges = uniqWith(allEdges, (e1, e2) => isEqual(e1, e2) || isEqual(e1, reverse(e2)));
 
   return { vertices, edges, faces };
-};
-
-export const getPaths = (edges: Edge[], impassablePoints: Point[]): Path[] => {
-  const allPaths: Path[] = [];
-  const connections = mapConnections(edges);
-  const openSet = [ ...edges ];
-
-  const followEdge = (startEdge: Edge, startIndex: 0 | 1): Path => {
-    const p0 = startEdge[startIndex];
-    const nextEdgeCandidates = openSet.filter(edge => includes(edge, p0));
-    if (connections[p0].length > 2 || nextEdgeCandidates.length !== 1) {
-      return [];
-    }
-    const nextEdge = nextEdgeCandidates[0];
-    const nextStartIndex = nextEdge.findIndex(p => p !== p0) as 1 | 0;
-    const p1 = nextEdge[nextStartIndex];
-    openSet.splice(openSet.indexOf(nextEdge), 1);
-
-    return [ p1, ...followEdge(nextEdge, nextStartIndex) ];
-  };
-
-  while (openSet.length) {
-    const startEdge = openSet.shift() as Edge;
-    const path: Path = [
-      ...reverse(followEdge(startEdge, 0)), ...startEdge, ...followEdge(startEdge, 1),
-    ];
-    allPaths.push(path);
-  }
-
-  return allPaths;
-};
-
-export const mapConnections = (edges: Edge[]): { [p: number]: Point[] } => {
-  const connections = {};
-  edges.forEach(edge => {
-    edge.forEach((p, i) => {
-      if (!connections[p]) {
-        connections[p] = [];
-      }
-      connections[p].push(edge[1 - i]);
-    });
-  });
-
-  return connections;
 };
