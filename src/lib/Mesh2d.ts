@@ -63,19 +63,15 @@ export const makeMeshFromPolygons = (polygons: Polygon[]): Mesh => {
   return { vertices, edges, faces };
 };
 
-const getEdgesAtPoint = (edges: Edge[], point: Point): Edge[] => {
-  return edges.filter(edge => includes(edge, point));
-};
-
 export const getPaths = (edges: Edge[], impassablePoints: Point[]): Path[] => {
   const allPaths: Path[] = [];
+  const connections = mapConnections(edges);
   const openSet = [ ...edges ];
 
   const followEdge = (startEdge: Edge, startIndex: 0 | 1): Path => {
     const p0 = startEdge[startIndex];
-    const connections = getEdgesAtPoint(edges, p0);
-    const nextEdgeCandidates = getEdgesAtPoint(openSet, p0);
-    if (connections.length > 2 || nextEdgeCandidates.length !== 1) {
+    const nextEdgeCandidates = openSet.filter(edge => includes(edge, p0));
+    if (connections[p0].length > 2 || nextEdgeCandidates.length !== 1) {
       return [];
     }
     const nextEdge = nextEdgeCandidates[0];
@@ -95,4 +91,18 @@ export const getPaths = (edges: Edge[], impassablePoints: Point[]): Path[] => {
   }
 
   return allPaths;
+};
+
+export const mapConnections = (edges: Edge[]): { [p: number]: Point[] } => {
+  const connections = {};
+  edges.forEach(edge => {
+    edge.forEach((p, i) => {
+      if (!connections[p]) {
+        connections[p] = [];
+      }
+      connections[p].push(edge[1 - i]);
+    });
+  });
+
+  return connections;
 };
