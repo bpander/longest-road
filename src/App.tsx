@@ -5,7 +5,7 @@ import React from 'react';
 import { standardMap } from 'assets/maps';
 import { removeFirst } from 'lib/Arrays';
 import { makeMeshFromHexTiles } from 'lib/HexGrid';
-import { getPaths } from 'lib/Pathfinder';
+import * as Pathfinder from 'lib/Pathfinder';
 import Vector2 from 'types/Vector2';
 
 const mesh = makeMeshFromHexTiles(standardMap, 50);
@@ -21,6 +21,7 @@ interface AppState {
   viewportSize: Vector2;
   edges: number[];
   editMode: EditMode;
+  longestPath: Pathfinder.Path[];
 }
 
 class App extends React.Component<{}, AppState> {
@@ -35,6 +36,7 @@ class App extends React.Component<{}, AppState> {
       viewportSize: App.getViewportSize(),
       edges: [],
       editMode: EditMode.None,
+      longestPath: [],
     };
   }
 
@@ -45,7 +47,9 @@ class App extends React.Component<{}, AppState> {
   componentDidUpdate(prevProps: {}, prevState: AppState) {
     if (prevState.edges !== this.state.edges) {
       const edges = this.state.edges.map(index => mesh.edges[index]);
-      console.log(getPaths(edges, []));
+      const paths = Pathfinder.getPaths(edges, []);
+      const longestPath = Pathfinder.constructLongestPath(paths);
+      this.setState({ longestPath });
     }
   }
 
@@ -137,6 +141,13 @@ class App extends React.Component<{}, AppState> {
                 </React.Fragment>
               );
             })}
+            {this.state.longestPath.map((path, i) => (
+              <polyline
+                key={i}
+                points={path.map(p => mesh.vertices[p].join()).join(' ')}
+                className="longest-road"
+              />
+            ))}
             {mesh.edges.map((edge, i) => (
               <line
                 key={i}

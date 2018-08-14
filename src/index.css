@@ -66,3 +66,10 @@ text {
 .scene:not(.scene--drawing) .edge--active:hover {
   stroke: #becfd7;
 }
+
+.longest-road {
+  fill: none;
+  stroke: orange;
+  stroke-width: 15;
+  stroke-linecap: round;
+}
