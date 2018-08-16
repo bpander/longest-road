@@ -73,16 +73,13 @@ export const constructLongestPath = (paths: Path[]): Path[] => {
   if (!paths.length) {
     return [];
   }
-  let openSet: Path[] = [];
   const candidates: Path[][] = [];
   const connections = connectPaths(paths);
   const followPath = (pathsSoFar: Path[], nextPath: Path, point: Mesh2d.Point) => {
-    const pathIndex = openSet.indexOf(nextPath);
-    if (pathIndex === -1) {
+    if (includes(pathsSoFar, nextPath)) {
       candidates.push(pathsSoFar);
       return;
     }
-    openSet.splice(pathIndex, 1);
     const nextPathCandidates = removeFirst(connections[point], nextPath);
     if (!nextPathCandidates.length) {
       candidates.push([ ...pathsSoFar, nextPath ]);
@@ -99,9 +96,7 @@ export const constructLongestPath = (paths: Path[]): Path[] => {
     });
   };
   paths.forEach(path => {
-    openSet = [ ...paths ];
     followPath([], path, first(path)!);
-    openSet = [ ...paths ];
     followPath([], path, last(path)!);
   });
 
