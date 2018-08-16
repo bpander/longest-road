@@ -83,7 +83,7 @@ export const constructLongestPath = (paths: Path[]): Path[] => {
       return;
     }
     openSet.splice(pathIndex, 1);
-    const nextPathCandidates = removeFirst(connections[point], last(pathsSoFar)!);
+    const nextPathCandidates = removeFirst(connections[point], nextPath);
     if (!nextPathCandidates.length) {
       candidates.push([ ...pathsSoFar, nextPath ]);
       return;
@@ -105,5 +105,5 @@ export const constructLongestPath = (paths: Path[]): Path[] => {
     followPath([], path, last(path)!);
   });
 
-  return maxBy(candidates, candidate => sumBy(candidate, path => path.length) - (candidate.length - 1))!;
+  return maxBy(candidates, candidate => sumBy(candidate, path => path.length - 1))!;
 };
